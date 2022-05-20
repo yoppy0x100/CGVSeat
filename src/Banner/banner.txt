@@ -1,0 +1,7 @@
+    <background_red> .-===-. </background_red>
+    <background_red> | . . | </background_red>
+    <background_red> | .'. | </background_red>
+    <background_red>()_____()</background_red>
+    <background_red>||_____||</background_red>
+    <background_red> W     W </background_red>
+ <light_green>CGVSeat Check</light_green> <yellow>v1.0</yellow>
