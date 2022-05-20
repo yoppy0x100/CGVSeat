@@ -1,0 +1,21 @@
+{
+    "name": "yoppy0x100/cgvseat",
+    "description": "this library for check cgv seat",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Yoppy Dimas",
+            "email": "anggaraputra456@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php-curl-class/php-curl-class": "^9.6",
+        "league/climate": "^3.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "CGVSeat\\": "src"
+        }
+    }
+}
