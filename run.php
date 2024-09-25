@@ -36,17 +36,17 @@ class Check
     public function showMovie()
     {
         $dataMovie = [];
-        $movies = (new Movie)->getMovie($this->location->getId());
-        foreach ($movies->playing as $key => $movie) {
+        $movies = (new Movie)->nowPlaying();
+        foreach ($movies->data as $key => $movie) {
             $dataMovie[] = $text = $movie->name;
             $this->climate->out('<background_magenta><green> ' . $key . '. </green></background_magenta> ' . $text);
         }
         $this->climate->br();
         $input = $this->climate->input('Pilih Film : ')->accept(range(0, count($dataMovie)));
-        $data = $input->strict()->prompt();
+        $prompt = $input->strict()->prompt();
         $this->climate->clear();
 
-        $playing = $movies->playing[$data];
+        $playing = $movies->data[$prompt];
         $date = ($playing->type != 2) ? $this->dateRange() : $this->dateRange($playing->opening_date);
 
         return (object) [
@@ -59,7 +59,7 @@ class Check
     {
         $this->showBanner();
         $movie = $this->showMovie();
-        $schedule = (new Schedule)->getAvailableSeat($this->location->getId(), $movie->id, $movie->date);
+        $schedule = (new Schedule)->getAvailableSeat($movie->date, $movie->id, '000');
 
         foreach ($schedule as $dataSeat) {
             $this->climate->backgroundGreenBlackBlink($dataSeat['location'])->br();

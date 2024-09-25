@@ -3,13 +3,14 @@
 namespace CGVSeat;
 
 use Curl\Curl;
+use CGVSeat\Config;
 
 /**
  * 
  * @package CGVSeat
  * @author Yoppy Dimas <anggaraputra456@gmail.com|yoppy@sgbteam.id> 
  * */
-class Handler
+class Handler extends Config
 {
     const URL = 'https://m.cgv.id/';
 
@@ -25,17 +26,9 @@ class Handler
      */
     protected function getToken()
     {
-        if (file_exists('token.txt')) {
-            return isset($this->token) ? $this->token : json_decode(@file_get_contents('token.txt'), true);
-        }
-
         $curl = new Curl;
         $curl->get(self::URL);
         $token = $curl->getResponseCookies();
-        $this->setToken($token);
-
-        $json = json_encode($token);
-        @file_put_contents('token.txt', $json);
 
         return $token;
     }

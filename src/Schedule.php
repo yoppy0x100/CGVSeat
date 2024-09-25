@@ -26,19 +26,29 @@ class Schedule extends Handler
     /**
      * this is the main function to get data of seat
      * 
-     * @param string|Location\{getId} $location_id
+     * @param string $date Ymd format
      * @param string|Movie $movieID
-     * @param string|Movie $date Ymd format
+     * @param string|Location\{getId} $location_id
      * 
      * @return array 
      */
-    public function getAvailableSeat(string $location_id = '029', string $movieID, string $date)
+    public function getAvailableSeat($date, $movieID, $LocationID = '029')
     {
         $dataSeat = [];
-        $response = $this->fetch('post', 'schedule_movie/' . $movieID . '/' . $date, [
-            'location_id' => $location_id,
+        $response = $this->fetch('post', 'mw/exceute', [
+            "method" => "get",
+            "path" => trim("movies/" . $movieID . "/schedules"),
+            "params" => [
+                "date" => $date,
+                "location_id" => $LocationID
+            ] 
         ]);
-        foreach ($response->schedules->cinemas as $key => $data) {
+
+        // Mode switch
+        if(strtolower(SELF::TYPE) == 'api') {
+            return $response->data;
+        }
+        foreach ($response->data->cinemas as $key => $data) {
             $dataSchedule = [];
             foreach ($data->schedule_types as $schedules) {
                 $dataSchedule[] = [

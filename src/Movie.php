@@ -14,20 +14,37 @@ class Movie extends Handler
     /**
      * getting movie data from api
      * 
-     * @param mixed $id
+     * @param mixed $LocationID
      * 
      * @return object return of curl response
      */
-    public function getMovie($id)
+    public function nowPlaying($LocationID = '000')
     {
-        $response = $this->fetch('post', 'movies/playing', [
-            'location_id' => $id,
+        return $this->fetch('post', 'mw/exceute', [
+            "method" => "get",
+            "path" => "movies/home",
+            "params" => [
+                "location_id" => $LocationID,
+            ]
         ]);
+    }
 
-        if (isset($response->message)) {
-            @unlink('token.txt');
-            return $this->getMovie($id);
-        }
-        return $response;
+    public function upcoming($LocationID = '029') {
+        return $this->fetch('post', 'mw/exceute', [
+            "method" => "get",
+            "path" => "movies/upcoming",
+            "params" => [
+                "location_id" => $LocationID,
+            ]
+        ]);
+    }
+
+    public function info($movieID)
+    {
+        return $this->fetch('post', 'mw/exceute', [
+            "method" => "get",
+            "path" => trim("movies/" . $movieID),
+            "params" => ''
+        ]);
     }
 }

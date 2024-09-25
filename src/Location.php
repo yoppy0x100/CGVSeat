@@ -47,12 +47,18 @@ class Location extends Handler
      */
     public function getLocation()
     {
-        $response = $this->fetch('post', 'cities-cgv');
+        $location = [];
+        $response = $this->fetch('post', 'mw/exceute', [
+            "method" => "get",
+            "path" => "locations",
+            "params" => ''
+        ]);
 
-        if (isset($response->message)) {
-            @unlink('token.txt');
-            return $this->getLocation();
+        foreach($response->data as $data){
+            $location[$data->id] = $data->name;
         }
-        return $response;
+        ksort($location);
+
+        return $location;
     }
 }
