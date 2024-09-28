@@ -3,14 +3,19 @@ date_default_timezone_set('asia/jakarta');
 
 require 'vendor/autoload.php';
 
-use CGVSeat\Location;
+use CGVSeat\Config;
 use CGVSeat\Movie;
+use CGVSeat\Location;
 use CGVSeat\Schedule;
 use League\CLImate\Climate;
 
-class Check
+class Check extends Config
 {
 
+    private $movieName = '';
+
+    private $climate,$location;
+    
     public function __construct()
     {
         $this->climate = new Climate;
@@ -30,6 +35,8 @@ class Check
         $tgl = $input->strict()->prompt();
 
         $this->climate->clear();
+        $this->climate->addArt('./src/Banner');
+        $this->climate->draw('loading')->br();
         return date('Ymd', strtotime($dateAr[$tgl]));
     }
 
@@ -46,6 +53,7 @@ class Check
         $prompt = $input->strict()->prompt();
         $this->climate->clear();
 
+        $this->setMovieName($movies->data[$prompt]->name);
         $playing = $movies->data[$prompt];
         $date = ($playing->type != 2) ? $this->dateRange() : $this->dateRange($playing->opening_date);
 
@@ -59,27 +67,34 @@ class Check
     {
         $this->showBanner();
         $movie = $this->showMovie();
-        $schedule = (new Schedule)->getAvailableSeat($movie->date, $movie->id, '000');
+        $schedule = (new Schedule)->show($movie->date, $movie->id, '029');
 
+        $this->climate->clear();
         foreach ($schedule as $dataSeat) {
-            $this->climate->backgroundGreenBlackBlink($dataSeat['location'])->br();
+            $this->climate->backgroundGreenBlackBlink($this->getMovieName() . ' - ' . $dataSeat['location'])->br();
             unset($dataSeat['location']);
 
             foreach ($dataSeat as $seat) {
                 $this->climate->backgroundCyan($seat['auditorium'] . ' - ' . $seat['format'] . ' | <light_yellow>' . $seat['price'] . '</light_yellow>');
-                $this->showDataSeat($seat['seat']);
+                (self::DETAILS == true) ? $this->renderDetails($seat['seat']) : $this->renderSimple($seat['seat']);
                 $this->climate->br();
             }
             $this->climate->br();
         }
     }
 
-    private function showDataSeat($seat)
+    /**
+     * @param mixed $seat
+     * 
+     * @return null
+     */
+    private function renderDetails($seat)
     {
         $dataColor = [
             'regular' => 'magenta',
             'sweetbox' => 'light_blue',
-            'cushion' => 'cyan'
+            'cushion' => 'cyan',
+            'velvet' => 'light_red',
         ];
         foreach ($seat as $key => $data) {
             $first = $this->climate->inline('<green><bold>Start</bold></green> : ' . $data['start'] . ' ')->inline('<red><bold>End</bold></red> : ' . $data['end']);
@@ -91,10 +106,46 @@ class Check
         }
     }
 
+    private function renderSimple($seat)
+    {
+        foreach($seat as $dataSchedule) {
+            $first = $this->climate->inline('<green><bold>Start</bold></green> : ' . $dataSchedule->start_time . ' ')->inline('<red><bold>End</bold></red> : ' . $dataSchedule->end_time . ' ');
+            $first->inline('<light_blue><bold>Remaining</bold></light_blue> : <blink>' . $dataSchedule->remaining_seat_count . '</blink> ')->inline('<magenta><bold>Total</bold></magenta> : ' . $dataSchedule->total_seat_count);
+            $first->br();
+        }
+    }
+
+    /**
+     * @return null
+     */
     private function showBanner()
     {
+        if(strtolower(self::TYPE) == 'api') {
+            $this->climate->error('Ubah tipenya gobloug di config !!!');
+            throw new Exception("Missconfiguration on config.php, Please change the type", 1);
+        }
         $this->climate->addArt('./src/Banner');
         $this->climate->draw('banner')->br();
+    }
+
+    /**
+     * Get the value of movieName
+     */ 
+    public function getMovieName()
+    {
+        return $this->movieName;
+    }
+
+    /**
+     * Set the value of movieName
+     *
+     * @return  self
+     */ 
+    public function setMovieName($movieName)
+    {
+        $this->movieName = $movieName;
+
+        return $this;
     }
 }
 
