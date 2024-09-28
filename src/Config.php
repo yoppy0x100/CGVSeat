@@ -4,9 +4,9 @@ namespace CGVSeat;
 
 class Config
 {
-    #SHOW PRICE (EXperimental)
-    CONST PRICE = true;
+    #Showing details of seat on cli mode (will be slowed) true|false
+    CONST DETAILS = true;
 
-    #API OR CLI
-    CONST TYPE = 'cli';
+    #API OR CLI for use
+    CONST TYPE = 'api';
 }
