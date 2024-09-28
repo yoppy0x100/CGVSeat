@@ -18,7 +18,7 @@ class Movie extends Handler
      * 
      * @return object return of curl response
      */
-    public function nowPlaying($LocationID = '000')
+    public function nowPlaying($LocationID = '029')
     {
         return $this->fetch('post', 'mw/exceute', [
             "method" => "get",
@@ -29,6 +29,11 @@ class Movie extends Handler
         ]);
     }
 
+    /**
+     * @param string $LocationID
+     * 
+     * @return object
+     */
     public function upcoming($LocationID = '029') {
         return $this->fetch('post', 'mw/exceute', [
             "method" => "get",
@@ -39,6 +44,11 @@ class Movie extends Handler
         ]);
     }
 
+    /**
+     * @param mixed $movieID
+     * 
+     * @return object
+     */
     public function info($movieID)
     {
         return $this->fetch('post', 'mw/exceute', [

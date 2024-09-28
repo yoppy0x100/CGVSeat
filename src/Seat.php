@@ -24,17 +24,21 @@ class Seat extends Handler
      * 
      * @return array
      */
-    public function getSeats(string $scheduleID, callable $class = null)
+    public function details(string $scheduleID, callable $class = null)
     {
-        // $response = $this->fetch('get', self::URI . $id)->seats->rows;
         $response = $this->fetch('post', 'mw/exceute', [
             "method" => "get",
             "path" => trim("movie-schedules/" . $scheduleID . "/seats"),
             "params" => "",
         ])->data->rows;
+
+        if(strtolower(SELF::TYPE) == 'api'){
+            return $response;
+        }
+        
         foreach ($response as $key => $seat) {
             foreach ($seat->seats as $data) {
-                if ($data->is_available == true) {
+                if ($data->is_available == true and $data->is_seat == true) {
                     $grade = strtolower($data->grade);
                     $dataSeat = trim($data->row_name . $data->number);
                     $this->setSeat($grade, $dataSeat);

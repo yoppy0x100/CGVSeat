@@ -32,7 +32,7 @@ class Schedule extends Handler
      * 
      * @return array 
      */
-    public function getAvailableSeat($date, $movieID, $LocationID = '029')
+    public function show($date, $movieID, $LocationID = '029')
     {
         $dataSeat = [];
         $response = $this->fetch('post', 'mw/exceute', [
@@ -44,10 +44,11 @@ class Schedule extends Handler
             ] 
         ]);
 
-        // Mode switch
+        // Type output switcher
         if(strtolower(SELF::TYPE) == 'api') {
             return $response->data;
         }
+
         foreach ($response->data->cinemas as $key => $data) {
             $dataSchedule = [];
             foreach ($data->schedule_types as $schedules) {
@@ -55,7 +56,7 @@ class Schedule extends Handler
                     'auditorium' => $schedules->auditorium_name,
                     'format' => $schedules->movie_format,
                     'price' => $this->getPrice($schedules),
-                    'seat' => $this->getSchedule($schedules)
+                    'seat' => $this->details($schedules)
                 ];
             }
             $dataSeat[] = array_merge([
@@ -72,20 +73,33 @@ class Schedule extends Handler
      * 
      * @return array retuning available seat
      */
-    protected function getSchedule(object $data)
+    protected function details(object $data)
     {
         $dataSeat = [];
         foreach ($data->schedules as $key => $value) {
-            $seat = $this->Seat()->getSeats($value->id, function ($resp) {
-                $this->setGradeSeat($resp);
-            });
-            empty($seat) ?: $dataSeat[] = [
+            $dataSeat[] = (self::DETAILS == true) ? [
                 'start' => $value->start_time,
                 'end' => $value->end_time,
-                'data' => $seat
-            ];
+                'data' => $this->Seat()->details($value->id, function ($resp) {
+                    $this->setGradeSeat($resp);
+                })
+            ] : $value;
         }
         return $dataSeat;
+    }
+
+    public function getRemaining($date, $movieID, $LocationID = '029')
+    {
+        $response = $this->fetch('post', 'mw/exceute', [
+            "method" => "get",
+            "path" => trim("movies/" . $movieID . "/schedules"),
+            "params" => [
+                "date" => $date,
+                "location_id" => $LocationID
+            ]
+        ]);
+
+        return $response;   
     }
 
     /**
