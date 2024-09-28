@@ -1,0 +1,3 @@
+<light_blue>┬  ┌─┐┌─┐┌┬┐┬┌┐┌┌─┐</light_blue>   
+<light_blue>│  │ │├─┤ │││││││ ┬</light_blue>   
+<light_blue>┴─┘└─┘┴ ┴─┴┘┴┘└┘└─┘</light_blue><blink><magenta>ooo</magenta></blink>
