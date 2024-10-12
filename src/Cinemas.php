@@ -18,7 +18,7 @@ class Cinemas extends Handler
      */
     public function getLocation(string $locationID = '023')
     {
-        return $this->fetch('post', 'mw/exceute', [
+        return $this->fetch([
             "method" => "get",
             "path" => "cinemas",
             "params" => [
@@ -35,7 +35,7 @@ class Cinemas extends Handler
      */
     public function show($Date, $locationID = '023')
     {
-        return $this->fetch('post', 'mw/exceute', [
+        return $this->fetch([
             "method" => "get",
             "path" => trim("cinemas/" . $locationID . "/schedules"),
             "params" => [

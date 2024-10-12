@@ -26,7 +26,7 @@ class Seat extends Handler
      */
     public function details(string $scheduleID, callable $class = null)
     {
-        $response = $this->fetch('post', 'mw/exceute', [
+        $response = $this->fetch([
             "method" => "get",
             "path" => trim("movie-schedules/" . $scheduleID . "/seats"),
             "params" => "",

@@ -48,11 +48,14 @@ class Location extends Handler
     public function getLocation()
     {
         $location = [];
-        $response = $this->fetch('post', 'mw/exceute', [
+        $response = $this->fetch([
             "method" => "get",
             "path" => "locations",
             "params" => ''
         ]);
+
+        print_r($response);
+        exit;
 
         foreach($response->data as $data){
             $location[$data->id] = $data->name;

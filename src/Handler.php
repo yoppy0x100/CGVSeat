@@ -2,8 +2,9 @@
 
 namespace CGVSeat;
 
-use Curl\Curl;
 use CGVSeat\Config;
+use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
 
 /**
  * 
@@ -19,6 +20,9 @@ class Handler extends Config
      */
     private $token;
 
+    #Guzzle\\cookieJar
+    private $cookies;
+
     /**
      * getting the token or checking exist token
      * 
@@ -26,11 +30,13 @@ class Handler extends Config
      */
     protected function getToken()
     {
-        $curl = new Curl;
-        $curl->get(self::URL);
-        $token = $curl->getResponseCookies();
 
-        return $token;
+        $client = new Client();
+        $response = $client->request('GET', self::URL, [
+            'cookies' => $this->cookies,
+        ]);
+
+        return $response;
     }
 
     /**
@@ -38,43 +44,38 @@ class Handler extends Config
      * 
      * @param string $method
      * @param string $uri
-     * @param array|null $data
+     * @param null $data
      * 
      * @return object Curl
      */
-    protected function fetch(string $method, string $uri, array $data = null)
+    public function fetch($data = null)
     {
-        $curl = new Curl;
-        $token = $this->getToken();
-        $method = strtolower($method);
+        $this->getToken();
+        $client = new Client();
+        $csrf = $this->cookies->getCookieByName('XSRF-TOKEN')->getValue();
         $headers = [
-            'referer' => 'https://m.cgv.id/',
-            'accept-language' => 'en-US,en;q=0.9',
-            'authority' => 'm.cgv.id',
-            'sec-ch-ua' => '" Not A;Brand";v="99", "Chromium";v="99", "Google Chrome";v="99"',
-            'dnt' => '1',
-            'x-xsrf-token' => urldecode($token['XSRF-TOKEN']),
-            'sec-ch-ua-mobile' => '?1',
-            'user-agent' => 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Mobile Safari/537.36',
-            'accept' => 'application/json, text/plain, */*',
-            'x-requested-with' => 'XMLHttpRequest',
-            'sec-ch-ua-platform' => '"Android"',
-            'origin' => 'https://m.cgv.id',
-            'sec-fetch-site' => 'same-origin',
-            'sec-fetch-mode' => 'cors',
-            'sec-fetch-dest' => 'empty',
-            'referer' => 'https://m.cgv.id/',
-            'accept-language' => 'en-US,en;q=0.9',
+            'Accept' => 'application/json, text/plain, */*',
+            'Accept-Language' => 'en-US,en;q=0.9',
+            'Access-Control-Allow-Origin' => '*',
+            'Content-Type' => 'application/json',
+            'Dnt' => '1',
+            'Origin' => 'https://m.cgv.id',
+            'Priority' => 'u=1, i',
+            'Referer' => 'https://m.cgv.id/',
+            'Sec-Fetch-Dest' => 'empty',
+            'Sec-Fetch-Mode' => 'cors',
+            'Sec-Fetch-Site' => 'same-origin',
+            'User-Agent' => 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1 Edg/129.0.0.0',
+            'X-XSRF-TOKEN' => urldecode($csrf),
         ];
-        $curl->setHeaders($headers);
-        $curl->setCookies($token);
-        if (isset($data) && ($method == 'post')) {
-            $curl->$method(self::URL . $uri, $data);
-        } else {
-            $curl->$method(self::URL . $uri);
-        }
 
-        return $curl->response;
+
+        $response = $client->request('POST', 'https://m.cgv.id/mw/execute', [
+            'cookies' => $this->cookies,
+            'headers' => $headers,'json' => $data,
+        ]);
+
+        return json_decode($response->getBody());
     }
 
     private function setToken($token)
@@ -91,5 +92,10 @@ class Handler extends Config
         }
 
         return $this;
+    }
+
+    public function __construct()
+    {
+        $this->cookies = new CookieJar();
     }
 }

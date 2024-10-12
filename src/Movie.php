@@ -20,7 +20,7 @@ class Movie extends Handler
      */
     public function nowPlaying($LocationID = '029')
     {
-        return $this->fetch('post', 'mw/exceute', [
+        return $this->fetch([
             "method" => "get",
             "path" => "movies/home",
             "params" => [
@@ -35,7 +35,7 @@ class Movie extends Handler
      * @return object
      */
     public function upcoming($LocationID = '029') {
-        return $this->fetch('post', 'mw/exceute', [
+        return $this->fetch([
             "method" => "get",
             "path" => "movies/upcoming",
             "params" => [

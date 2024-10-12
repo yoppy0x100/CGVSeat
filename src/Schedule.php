@@ -35,7 +35,7 @@ class Schedule extends Handler
     public function show($date, $movieID, $LocationID = '029')
     {
         $dataSeat = [];
-        $response = $this->fetch('post', 'mw/exceute', [
+        $response = $this->fetch([
             "method" => "get",
             "path" => trim("movies/" . $movieID . "/schedules"),
             "params" => [
@@ -90,7 +90,7 @@ class Schedule extends Handler
 
     public function getRemaining($date, $movieID, $LocationID = '029')
     {
-        $response = $this->fetch('post', 'mw/exceute', [
+        $response = $this->fetch([
             "method" => "get",
             "path" => trim("movies/" . $movieID . "/schedules"),
             "params" => [

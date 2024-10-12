@@ -10,8 +10,8 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php-curl-class/php-curl-class": "^9.6",
-        "league/climate": "^3.8"
+        "league/climate": "^3.8",
+        "guzzlehttp/guzzle": "^7.9"
     },
     "autoload": {
         "psr-4": {

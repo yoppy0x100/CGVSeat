@@ -5,8 +5,8 @@ namespace CGVSeat;
 class Config
 {
     #Showing details of seat on cli mode (will be slowed) true|false
-    CONST DETAILS = true;
+    CONST DETAILS = false;
 
     #API OR CLI for use
-    CONST TYPE = 'api';
+    CONST TYPE = 'cli';
 }
