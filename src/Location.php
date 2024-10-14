@@ -54,9 +54,6 @@ class Location extends Handler
             "params" => ''
         ]);
 
-        print_r($response);
-        exit;
-
         foreach($response->data as $data){
             $location[$data->id] = $data->name;
         }
